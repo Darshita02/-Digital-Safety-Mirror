@@ -27,13 +27,16 @@ The system uses a webcam to capture live video, processes the video using MediaP
 • To provide a user-friendly smart mirror interface
 
 **✔  Technologies Used**
-Technology                    Purpose
-• Python	                  Programming Language
-• OpenCV	                  Video Capture & Processing
-• MediaPipe	                  Human Pose Detection
-• NumPy	                      Numerical Calculations
-• Streamlit	                  Frontend Interface
-• VS Code	                  Development Environment
+
+| Technology  | Purpose                         |
+|-------------|---------------------------------|
+| Python      | Programming Language            |
+| OpenCV      | Video Capture & Processing      |
+| MediaPipe   | Human Pose Detection            |
+| NumPy       | Numerical Calculations          |
+| Streamlit   | Frontend Interface              |
+| VS Code     | Development Environment         |
+
 
 
 **✔  Functional Requirements**
