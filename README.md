@@ -1,8 +1,10 @@
 **Digital Safety Mirror**
+
 **AI-Based Real-Time Human Safety Monitoring System**
 
 
 **📌 Project Description**
+
 The Digital Safety Mirror is an AI-based real-time monitoring system designed to detect unsafe human situations such as:
 
 • Fall Detection
@@ -16,6 +18,7 @@ This project improves upon existing motion detection systems by incorporating Hu
 The system uses a webcam to capture live video, processes the video using MediaPipe Pose Detection, and displays real-time alerts through a Streamlit-based smart mirror interface.
 
 **🎯 Objectives**
+
 • To monitor human activity in real-time
 
 • To detect unsafe posture and imbalance
@@ -38,8 +41,8 @@ The system uses a webcam to capture live video, processes the video using MediaP
 | VS Code     | Development Environment         |
 
 
-
 **✔  Functional Requirements**
+
 • Capture real-time video using webcam
 
 • Detect human body landmarks
@@ -53,6 +56,7 @@ The system uses a webcam to capture live video, processes the video using MediaP
 • Display real-time monitoring dashboard
 
 **✔  Non-Functional Requirements**
+
 • Real-time system performance
 
 • Detection accuracy ≥ 80%
@@ -65,27 +69,28 @@ The system uses a webcam to capture live video, processes the video using MediaP
 
 
 **✔  Working Process**
-1.Webcam captures live video feed.
 
-2.Video frames are processed using OpenCV.
+1. Webcam captures live video feed.
 
-3.MediaPipe extracts body landmarks from frames.
+2. Video frames are processed using OpenCV.
 
-4.System calculates:
+3. MediaPipe extracts body landmarks from frames.
+
+4. System calculates:
 
    • Body height
    • Shoulder alignment
    • Head position
 
-5.Safety detection logic identifies:
+5. Safety detection logic identifies:
 
    • Fall
    • Unsafe posture
    • Imbalance
 
-6.Alert message is generated if unsafe condition is detected.
+6. Alert message is generated if unsafe condition is detected.
 
-7.Streamlit dashboard displays:
+7. Streamlit dashboard displays:
 
    • Live video feed
    • Alert message
@@ -94,6 +99,7 @@ The system uses a webcam to capture live video, processes the video using MediaP
    • Detection accuracy
 
 **📁 Project Folder Structure**
+
 digital-safety-mirror/
 │
 ├── app.py
@@ -104,7 +110,9 @@ digital-safety-mirror/
 └── README.md
 
 **✔ File Description**
+
 **🔹 app.py**
+
 • Streamlit Frontend
 
 • Camera access
@@ -116,6 +124,7 @@ digital-safety-mirror/
 • Alert Display
 
 **🔹 pose_detector.py**
+
 • Uses MediaPipe Pose
 
 • Detects body landmarks
@@ -123,6 +132,7 @@ digital-safety-mirror/
 • Returns pose data
 
 **🔹 safety_detection.py**
+
 • Fall detection logic
 
 • Posture analysis
@@ -130,14 +140,17 @@ digital-safety-mirror/
 • Imbalance detection
 
 **🔹 alert.py**
+
 • Displays alert message
 
 • Shows warning on screen
 
 **🔹 requirements.txt**
+
 • Contains required libraries for project execution.
 
 **✔  Expected Output**
+
 •Live video monitoring
 
 •Detection of unsafe posture
@@ -151,6 +164,7 @@ digital-safety-mirror/
 •Detection accuracy dashboard
 
 **✔  Applications:**
+
 •Elderly care monitoring
 
 •Workplace safety
@@ -162,6 +176,7 @@ digital-safety-mirror/
 •Rehabilitation centers
 
 **✔  Future Enhancements**
+
 •SMS or Email alert system
 
 •IoT integration
@@ -173,5 +188,6 @@ digital-safety-mirror/
 •Emergency contact notification
 
 **✔ Conclusion:**
+
 The Digital Safety Mirror provides an efficient and low-cost solution for real-time human safety monitoring. By integrating AI-based pose detection with a smart interface, the system ensures timely detection of unsafe situations and helps in preventing accidents in homes, hospitals, and workplaces.
 
