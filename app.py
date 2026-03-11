@@ -4,7 +4,7 @@ import time
 
 # Import other members' modules
 from pose_detector import detect_pose
-from safety_detection import detect_fall, detect_bad_posture, detect_imbalance
+from safety_detector import detect_fall, detect_bad_posture, detect_imbalance
 from alert import show_alert, show_warning, show_success
 
 
