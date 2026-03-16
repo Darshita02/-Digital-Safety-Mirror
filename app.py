@@ -6,6 +6,7 @@ import time
 from pose_detector import detect_pose
 from safety_detector import detect_fall, detect_bad_posture, detect_imbalance
 from alert import show_alert, show_warning, show_success
+from camera import start_camera, get_frame
 
 
 # ---------------------------
