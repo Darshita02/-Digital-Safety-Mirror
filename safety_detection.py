@@ -20,7 +20,7 @@ def detect_fall(landmarks):
 
     angle = calculate_angle(shoulder, hip, knee)
 
-    return angle < 120
+    return angle < 100   # STRICT (was 120)
 
 
 def detect_imbalance(landmarks):
@@ -29,7 +29,7 @@ def detect_imbalance(landmarks):
 
     tilt = abs(left_shoulder[1] - right_shoulder[1])
 
-    return tilt > 0.05
+    return tilt > 0.08   # STRICT (was 0.05)
 
 
 def detect_unstable_body(landmarks):
@@ -38,4 +38,4 @@ def detect_unstable_body(landmarks):
 
     height = abs(head[1] - hip[1])
 
-    return height < 0.2
+    return height < 0.15   # STRICT
