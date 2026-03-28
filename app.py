@@ -1,60 +1,52 @@
 import streamlit as st
 import cv2
-import time
 
-from camera import start_camera, get_frame
+from camera import start_camera, get_frame, release_camera
 from pose_detector import detect_pose
-from safety_detection import detect_fall, detect_bad_posture, detect_imbalance
-from alert import show_alert, show_warning, show_success
+from safety_detection import detect_fall, detect_imbalance, detect_unstable_body
+from alert import show_alert, show_success, play_sound, send_sms_alert
 
+st.title("🪞 Digital Safety Mirror")
 
-st.set_page_config(page_title="Digital Safety Mirror", layout="wide")
+run = st.checkbox("Start Camera")
 
-st.title("Digital Safety Mirror")
-st.write("AI-based Fall and Posture Detection System")
-
-fps_box = st.sidebar.empty()
-status_box = st.sidebar.empty()
+FRAME_WINDOW = st.image([])
 
 cap = start_camera()
 
-frame_window = st.empty()
+unsafe_frames = 0
+THRESHOLD = 8
+alert_sent = False
 
-prev_time = 0
-
-while cap.isOpened():
-
+while run:
     frame = get_frame(cap)
 
     if frame is None:
-        st.error("Camera not detected")
         break
 
-    frame, landmarks = detect_pose(frame)
+    landmarks = detect_pose(frame)
 
     if landmarks:
+        fall = detect_fall(landmarks)
+        imbalance = detect_imbalance(landmarks)
+        unstable = detect_unstable_body(landmarks)
 
-        if detect_fall(landmarks):
-            show_alert("⚠ Fall Detected")
-            status_box.error("Fall Detected")
-
-        elif detect_bad_posture(landmarks):
-            show_warning("⚠ Bad Posture")
-            status_box.warning("Bad Posture")
-
-        elif detect_imbalance(landmarks):
-            show_warning("⚠ Body Imbalance")
-            status_box.warning("Imbalance Detected")
-
+        if fall or imbalance or unstable:
+            unsafe_frames += 1
         else:
-            show_success("Normal Posture")
-            status_box.success("System Normal")
+            unsafe_frames = 0
 
-    current_time = time.time()
-    fps = 1 / (current_time - prev_time) if prev_time != 0 else 0
-    prev_time = current_time
+        if unsafe_frames > THRESHOLD:
+            show_alert("⚠ Unsafe Condition Detected!")
+            play_sound()
 
-    fps_box.metric("FPS", int(fps))
+            if not alert_sent:
+                send_sms_alert()
+                alert_sent = True
+        else:
+            show_success("Safe")
+            alert_sent = False
 
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame_window.image(frame)
+    FRAME_WINDOW.image(frame, channels="BGR")
+
+release_camera(cap)
