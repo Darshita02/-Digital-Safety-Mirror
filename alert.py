@@ -26,8 +26,8 @@ def send_sms_alert():
 
         client.messages.create(
             body="⚠ Unsafe condition detected!",
-            from_="+1234567890",
-            to="+919324086154"
+            from_="+14155238886",
+            to="+919326182564"
         )
 
     except:
