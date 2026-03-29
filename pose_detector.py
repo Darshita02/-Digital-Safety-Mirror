@@ -1,47 +1,44 @@
 import cv2
 import mediapipe as mp
+import numpy as np
+import tensorflow as tf
 
 mp_pose = mp.solutions.pose
 
+# -------- MediaPipe FULL --------
 pose = mp_pose.Pose(
     static_image_mode=False,
-    model_complexity=2,
+    model_complexity=2,   # FULL model (important)
     enable_segmentation=True,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5
+    min_detection_confidence=0.6,
+    min_tracking_confidence=0.6
 )
 
-prev_landmarks = None
-
-def smooth_landmarks(current, prev, alpha=0.7):
-    if prev is None:
-        return current
-
-    smoothed = []
-    for c, p in zip(current, prev):
-        x = alpha * p[0] + (1 - alpha) * c[0]
-        y = alpha * p[1] + (1 - alpha) * c[1]
-        smoothed.append((x, y))
-
-    return smoothed
-
-
-def detect_pose(frame):
-    global prev_landmarks
-
-    # Preprocessing
-    frame = cv2.GaussianBlur(frame, (5, 5), 0)
-
+def detect_pose_mediapipe(frame):
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    result = pose.process(rgb)
+    results = pose.process(rgb)
 
-    if result.pose_landmarks:
-        landmarks = [(lm.x, lm.y) for lm in result.pose_landmarks.landmark]
+    keypoints = []
+    if results.pose_landmarks:
+        for lm in results.pose_landmarks.landmark:
+            keypoints.append([lm.x, lm.y, lm.visibility])
 
-        landmarks = smooth_landmarks(landmarks, prev_landmarks)
-        prev_landmarks = landmarks
+    return np.array(keypoints), results
 
-        return landmarks
 
-    return None
-    
+# -------- MoveNet Thunder --------
+interpreter = tf.lite.Interpreter(model_path="movenet_thunder.tflite")
+interpreter.allocate_tensors()
+
+def detect_pose_movenet(frame):
+    img = cv2.resize(frame, (256, 256))
+    img = np.expand_dims(img, axis=0).astype(np.int32)
+
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    interpreter.set_tensor(input_details[0]['index'], img)
+    interpreter.invoke()
+
+    keypoints = interpreter.get_tensor(output_details[0]['index'])
+    return keypoints

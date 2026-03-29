@@ -1,34 +1,28 @@
-import streamlit as st
-import os
+from twilio.rest import Client
+import time
+from config import *
 
-def show_alert(message):
-    st.error(message)
+last_alert_time = 0
+COOLDOWN = 10  # seconds
 
-def show_warning(message):
-    st.warning(message)
+def send_sms(message):
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-def show_success(message):
-    st.success(message)
+    client.messages.create(
+        body=message,
+        from_=TWILIO_NUMBER,
+        to=TARGET_NUMBER
+    )
 
-def play_sound():
-    os.system("echo \a")
+def trigger_alert(is_unsafe):
+    global last_alert_time
 
+    if not is_unsafe:
+        return
 
-# OPTIONAL SMS ALERT
-def send_sms_alert():
-    try:
-        from twilio.rest import Client
+    current_time = time.time()
 
-        account_sid = "US6c9f35daf413c673ca25a504782c9882"
-        auth_token = "91498089ae6a7732b9f0ae1a31407a89"
-
-        client = Client(account_sid, auth_token)
-
-        client.messages.create(
-            body="⚠ Unsafe condition detected!",
-            from_="+14155238886",
-            to="+919326182564"
-        )
-
-    except:
-        print("SMS not configured")
+    if current_time - last_alert_time > COOLDOWN:
+        print("🚨 ALERT SENT")
+        send_sms("Unsafe posture detected!")
+        last_alert_time = current_time

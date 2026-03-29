@@ -1,52 +1,55 @@
 import streamlit as st
 import cv2
+import time
 
-from camera import start_camera, get_frame, release_camera
-from pose_detector import detect_pose
-from safety_detection import detect_fall, detect_imbalance, detect_unstable_body
-from alert import show_alert, show_success, play_sound, send_sms_alert
+from pose_detector import detect_pose_mediapipe
+from preprocessing import preprocess_frame
+from smoothing import KeypointSmoother
+from alert import trigger_alert
 
-st.title("🪞 Digital Safety Mirror")
+st.title("Digital Safety Mirror")
 
 run = st.checkbox("Start Camera")
 
-FRAME_WINDOW = st.image([])
+cap = cv2.VideoCapture(0)
+smoother = KeypointSmoother()
 
-cap = start_camera()
-
-unsafe_frames = 0
-THRESHOLD = 8
-alert_sent = False
+prev_time = 0
 
 while run:
-    frame = get_frame(cap)
-
-    if frame is None:
+    ret, frame = cap.read()
+    if not ret:
         break
 
-    landmarks = detect_pose(frame)
+    frame = preprocess_frame(frame)
 
-    if landmarks:
-        fall = detect_fall(landmarks)
-        imbalance = detect_imbalance(landmarks)
-        unstable = detect_unstable_body(landmarks)
+    keypoints, results = detect_pose_mediapipe(frame)
 
-        if fall or imbalance or unstable:
-            unsafe_frames += 1
+    if len(keypoints) > 0:
+        keypoints = smoother.smooth(keypoints)
+
+        # ---- SIMPLE SAFETY LOGIC ----
+        # Example: imbalance detection
+        left_shoulder = keypoints[11]
+        right_shoulder = keypoints[12]
+
+        diff = abs(left_shoulder[1] - right_shoulder[1])
+
+        is_unsafe = diff > 0.1
+
+        if is_unsafe:
+            st.error("UNSAFE")
         else:
-            unsafe_frames = 0
+            st.success("SAFE")
 
-        if unsafe_frames > THRESHOLD:
-            show_alert("⚠ Unsafe Condition Detected!")
-            play_sound()
+        trigger_alert(is_unsafe)
 
-            if not alert_sent:
-                send_sms_alert()
-                alert_sent = True
-        else:
-            show_success("Safe")
-            alert_sent = False
+    # FPS
+    curr_time = time.time()
+    fps = 1 / (curr_time - prev_time)
+    prev_time = curr_time
 
-    FRAME_WINDOW.image(frame, channels="BGR")
+    st.write(f"FPS: {int(fps)}")
+    st.image(frame, channels="BGR")
 
-release_camera(cap)
+cap.release()
